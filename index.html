@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codex Criminalis - Ελληνικός Ποινικός Κώδικας</title>
+    
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#3498db">
@@ -11,11 +12,11 @@
     <meta name="apple-mobile-web-app-title" content="Codex Criminalis">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     
-    <!-- Cache busting -->
+    <!-- AGGRESSIVE Cache busting -->
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
-    <meta name="version" content="v1.3.0-20250111">
+    <meta name="build" content="20250111-1500">
     
     <style>
         * {
@@ -68,15 +69,57 @@
             opacity: 0.9;
         }
 
+        .version-display {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-top: 5px;
+        }
+
+        /* Header controls */
+        .sound-toggle, .header-btn {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            z-index: 101;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sound-toggle {
+            top: 15px;
+            left: 15px;
+            font-size: 16px;
+        }
+
+        .sound-toggle:hover, .header-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sound-toggle.muted {
+            opacity: 0.5;
+        }
+
+        .header-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            display: flex;
+            gap: 8px;
+            z-index: 101;
+        }
+
         .search-section {
             padding: 20px;
             background: #f8f9fa;
             border-bottom: 1px solid #dee2e6;
-        }
-
-        .search-container {
-            position: relative;
-            margin-bottom: 15px;
         }
 
         .search-dual {
@@ -107,12 +150,6 @@
             box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
         }
 
-        .search-input:disabled {
-            background: #f8f9fa;
-            color: #6c757d;
-            border-color: #dee2e6;
-        }
-
         .search-btn {
             position: absolute;
             right: 5px;
@@ -127,14 +164,6 @@
             cursor: pointer;
             font-size: 16px;
             transition: all 0.3s ease;
-        }
-
-        .search-btn:hover {
-            background: #2980b9;
-        }
-
-        .search-btn:active {
-            transform: translateY(-50%) scale(0.95);
         }
 
         .search-mode {
@@ -157,28 +186,15 @@
         }
 
         .mode-btn.active {
-            background: #27ae60; /* Πράσινο για Γρήγορη */
+            background: #27ae60;
             color: white;
             border-color: #27ae60;
         }
 
-        .mode-btn:hover:not(.active) {
-            background: #f8f9fa;
-            border-color: #27ae60;
-        }
-
-        .mode-btn[data-mode="extended"] {
-            transition: all 0.3s ease;
-        }
-
         .mode-btn[data-mode="extended"].active {
-            background: #f39c12 !important; /* Πορτοκαλί για Εκτεταμένη - Force override */
+            background: #f39c12 !important;
             border-color: #f39c12 !important;
             color: white !important;
-        }
-
-        .mode-btn[data-mode="extended"]:hover:not(.active) {
-            border-color: #f39c12;
         }
 
         .browse-buttons {
@@ -200,7 +216,6 @@
             color: #333;
         }
 
-        /* FIX: Browse button active states - διαφορετικά χρώματα */
         .code-btn.active.pk-btn {
             background: #e74c3c;
             color: white;
@@ -210,17 +225,11 @@
         }
 
         .code-btn.active.kpd-btn {
-            background: #2471a3; /* Σκούρο μπλε για ΚΠΔ */
+            background: #2471a3;
             color: white;
             border-color: #2471a3;
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(36, 113, 163, 0.3);
-        }
-
-        .code-btn:hover:not(.active) {
-            border-color: #3498db;
-            background: #f8f9fa;
-            transform: translateY(-2px);
         }
 
         .code-btn .icon {
@@ -294,467 +303,65 @@
 
         .article-code {
             font-size: 12px;
-            color: #7f8c8d;
-            background: #ecf0f1;
             padding: 2px 8px;
             border-radius: 10px;
+            font-weight: 600;
         }
 
-        /* FIX: Proper ΠΚ/ΚΠΔ color coding */
         .article-code.pk {
             background: #ffebee;
             color: #c62828;
-            font-weight: 600;
         }
 
         .article-code.kpd {
             background: #e3f2fd;
             color: #1565c0;
-            font-weight: 600;
         }
 
-        .search-results {
-            margin-top: 20px;
-        }
-
-        .result-item {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .result-item:hover {
-            border-color: #3498db;
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
-        .result-article {
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .result-code {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 600;
-        }
-
-        /* FIX: Enhanced ΠΚ/ΚΠΔ labels */
-        .result-code.pk {
-            background: #e74c3c;
-        }
-
-        .result-code.kpd {
-            background: #3498db;
-        }
-
-        .result-code.special {
-            background: #9b59b6;
-        }
-
-        .result-title {
-            font-weight: 500;
-            color: #34495e;
-            margin-bottom: 5px;
-        }
-
-        .result-snippet {
-            color: #7f8c8d;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        /* FIX: Search highlighting */
-        .highlight {
-            background: #fff3cd !important;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: 600;
-            color: #856404;
-        }
-
-        .article-view {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-        }
-
-        .article-nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .nav-btn {
-            padding: 10px 15px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            min-width: 80px;
-        }
-
-        .nav-btn:hover:not(:disabled) {
-            background: #2980b9;
-            transform: translateY(-1px);
-        }
-
-        .nav-btn:active:not(:disabled) {
-            transform: translateY(0);
-        }
-
-        .nav-btn:disabled {
-            background: #bdc3c7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .article-number {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 16px;
-        }
-
-        .article-header {
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-
-        .article-header h2 {
-            color: #2c3e50;
-            font-size: 20px;
-            margin-bottom: 5px;
-        }
-
-        .article-header .meta {
-            color: #7f8c8d;
-            font-size: 16px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .meta .code-icon {
-            font-size: 18px;
-        }
-
-        .meta .code-icon.pk {
-            color: #e74c3c;
-        }
-
-        .meta .code-icon.kpd {
-            color: #3498db;
-        }
-
-        .article-content {
-            line-height: 1.6;
-            font-size: 16px;
-            color: #2c3e50;
-        }
-
-        .article-content p {
-            margin-bottom: 15px;
-        }
-
-        .paragraph {
-            margin-bottom: 12px;
-            padding: 8px 0;
-        }
-
-        .paragraph.highlighted {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding-left: 15px;
-            margin-left: -15px;
-            border-radius: 4px;
-        }
-
-        .paragraph-number {
-            font-weight: 600;
-            color: #3498db;
-            margin-right: 8px;
-        }
-
-        .article-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 15px;
-            border-top: 1px solid #dee2e6;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 8px 15px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .action-btn:hover {
-            background: #f8f9fa;
-            border-color: #3498db;
-            transform: translateY(-1px);
-        }
-
-        .action-btn:active {
-            transform: translateY(0);
-        }
-
-        .action-btn.bookmarked {
-            background: #3498db;
-            color: white;
-            border-color: #3498db;
-        }
-
-        .browse-view {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-        }
-
-        .browse-header {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #3498db;
-        }
-
-        .browse-header h2 {
-            color: #2c3e50;
-            font-size: 20px;
-        }
-
-        .article-list {
-            display: grid;
-            gap: 8px;
-        }
-
-        .article-list-item {
-            padding: 12px 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: white;
-        }
-
-        .article-list-item:hover {
-            background: #f8f9fa;
-            border-color: #3498db;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.1);
-        }
-
-        .article-list-info {
-            flex: 1;
-        }
-
-        .article-list-number {
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 2px;
-        }
-
-        .article-list-title {
-            font-size: 14px;
-            color: #7f8c8d;
-        }
-
-        .version-info {
-            background: #e8f4f8;
-            border: 1px solid #3498db;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 20px;
-        }
-
-        .version-info h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .version-btn {
-            padding: 6px 12px;
-            border: 1px solid #3498db;
-            background: white;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-right: 8px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .version-btn:hover {
-            background: #3498db;
-            color: white;
-        }
-
-        .version-btn.active {
-            background: #3498db;
-            color: white;
-            font-weight: 600;
-        }
-
-        /* Fullscreen mode */
-        .container.fullscreen-mode {
+        /* Modal */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            z-index: 999;
-            max-width: none;
-            height: 100vh;
-            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
         }
 
-        .container.fullscreen-mode .header {
-            position: sticky;
-            top: 0;
-        }
-
-        .version-controls {
-            margin: 10px 0;
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 500px;
+            margin: 20px;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
-        .compare-btn {
-            padding: 8px 16px;
-            background: #9b59b6; /* ΜΩΒ - Επαναφορά του χρώματος! */
-            color: white;
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
             border: none;
-            border-radius: 6px;
+            font-size: 24px;
             cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
+            color: #7f8c8d;
         }
 
-        .compare-btn:hover {
-            background: #8e44ad;
-            transform: translateY(-1px);
-        }
-
-        .compare-btn:active {
-            transform: translateY(0);
-        }
-
-        .compare-view {
-            margin-top: 15px;
-            border: 1px solid #9b59b6;
+        .dev-info {
+            text-align: left;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f8f9fa;
             border-radius: 8px;
-            padding: 15px;
-            background: #f9f7fb;
-        }
-
-        .compare-columns {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        @media (max-width: 768px) {
-            .compare-columns {
-                grid-template-columns: 1fr;
-                gap: 15px;
-            }
-        }
-
-        .compare-column {
-            padding: 15px;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-        }
-
-        .compare-column h5 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #9b59b6;
             font-size: 14px;
-        }
-
-        .compare-controls {
-            margin-bottom: 15px;
-            padding: 10px;
-            background: #ecf0f1;
-            border-radius: 6px;
-        }
-
-        .version-selectors {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        @media (max-width: 768px) {
-            .version-selectors {
-                grid-template-columns: 1fr;
-                gap: 10px;
-            }
-        }
-
-        .selector-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .selector-group label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .selector-group select {
-            padding: 6px 10px;
-            border: 1px solid #bdc3c7;
-            border-radius: 4px;
-            font-size: 12px;
-            background: white;
-            cursor: pointer;
-        }
-
-        .selector-group select:focus {
-            outline: none;
-            border-color: #9b59b6;
+            line-height: 1.6;
         }
 
         .footer {
@@ -776,115 +383,17 @@
             opacity: 0.6;
         }
 
-        .article-view-fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: white;
-            z-index: 200;
-            overflow-y: auto;
-            padding: 20px;
-        }
-
-        .article-view-fullscreen .article-nav {
-            position: sticky;
-            top: 0;
-            background: white;
-            z-index: 201;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        .fullscreen-toggle {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            width: 45px;
-            height: 35px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            z-index: 202;
-            box-shadow: 0 2px 8px rgba(231, 76, 60, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .fullscreen-toggle:hover {
-            background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
-        }
-
-        .fullscreen-toggle:active {
-            transform: translateY(0);
-        }
-
-        @media (max-width: 768px) {
-            .browse-buttons {
-                grid-template-columns: 1fr;
-            }
-            
-            .article-actions {
-                justify-content: center;
-            }
-            
-            .nav-btn {
-                font-size: 12px;
-                padding: 8px 12px;
-                min-width: 70px;
-            }
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #7f8c8d;
-        }
-
-        .extended-search-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 15px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .extended-search-btn:hover {
-            background: #c0392b;
-            transform: translateY(-1px);
-        }
-
-        .extended-search-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Toast animations */
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
+        /* Click effects */
+        .clickable {
+            transition: all 0.1s ease;
         }
         
-        @keyframes slideOut {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
+        .clickable:active {
+            transform: scale(0.98);
+            filter: brightness(0.95);
         }
 
+        /* Toast */
         .toast {
             position: fixed;
             top: 20px;
@@ -896,153 +405,39 @@
             z-index: 1000;
             font-size: 14px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            animation: slideIn 0.3s ease;
         }
 
-        /* Subtle click effect - iPhone-style */
-        .click-sound {
-            transition: all 0.1s ease;
-        }
-        
-        .click-sound:active {
-            transform: scale(0.98);
-            filter: brightness(0.95);
-        }
-
-        /* Sound toggle button */
-        .sound-toggle {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            z-index: 101;
-        }
-
-        .sound-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .sound-toggle.muted {
-            opacity: 0.5;
-        }
-
-        /* Header controls - right side */
-        .header-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 101;
-        }
-
-        .header-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Version info display */
-        .version-display {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        /* Developer info modal */
-        .modal-overlay {
+        /* Debug info */
+        .debug-info {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
+            bottom: 10px;
+            left: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            z-index: 999;
         }
 
-        .modal-overlay.show {
-            display: flex;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .modal-header {
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #7f8c8d;
-            transition: color 0.3s ease;
-        }
-
-        .modal-close:hover {
-            color: #2c3e50;
-        }
-
-        .dev-info {
-            text-align: left;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .dev-info strong {
-            color: #2c3e50;
+        @media (max-width: 768px) {
+            .browse-buttons {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Debug Info -->
+    <div class="debug-info" id="debugInfo">Loading...</div>
+
     <div class="container">
-        <header class="header" onclick="window.goHome()">
-            <button class="sound-toggle" onclick="window.toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
+        <header class="header clickable" onclick="goHome()">
+            <button class="sound-toggle clickable" onclick="toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
             
             <div class="header-controls">
-                <button class="header-btn click-sound" onclick="window.toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
-                <button class="header-btn click-sound" onclick="window.showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
+                <button class="header-btn clickable" onclick="toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
+                <button class="header-btn clickable" onclick="showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
             </div>
             
             <h1>⚖️ Codex Criminalis</h1>
@@ -1052,22 +447,24 @@
 
         <div class="search-section">
             <div class="search-dual">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη, 280.3)" id="searchInput">
-                    <button class="search-btn click-sound" id="searchBtn">🔍</button>
+                <div style="position: relative;">
+                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη)" id="searchInput">
+                    <button class="search-btn clickable" onclick="performSearch()">🔍</button>
                 </div>
-                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος/Εδάφιο" id="paragraphInput">
+                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος" id="paragraphInput">
             </div>
+            
             <div class="search-mode">
-                <button class="mode-btn active click-sound" data-mode="quick">⚡ Γρήγορη αναζήτηση</button>
-                <button class="mode-btn click-sound" data-mode="extended">🔍 Εκτεταμένη αναζήτηση</button>
+                <button class="mode-btn active clickable" data-mode="quick" onclick="setSearchMode('quick', this)">⚡ Γρήγορη αναζήτηση</button>
+                <button class="mode-btn clickable" data-mode="extended" onclick="setSearchMode('extended', this)">🔍 Εκτεταμένη αναζήτηση</button>
             </div>
+            
             <div class="browse-buttons">
-                <button class="code-btn click-sound pk-btn" data-action="browse" data-code="PK">
+                <button class="code-btn pk-btn clickable" onclick="showBrowse('PK', this)">
                     <span class="icon">📕</span>
                     ΠΟΙΝΙΚΟΣ ΚΩΔΙΚΑΣ
                 </button>
-                <button class="code-btn click-sound kpd-btn" data-action="browse" data-code="KPD">
+                <button class="code-btn kpd-btn clickable" onclick="showBrowse('KPD', this)">
                     <span class="icon">📘</span>
                     ΚΩΔΙΚΑΣ ΠΟΙΝΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ
                 </button>
@@ -1075,24 +472,23 @@
         </div>
 
         <main class="main-content">
-            <!-- Home Section -->
             <div class="section active" id="homeSection">
                 <div class="home-sections">
                     <div class="home-section">
                         <h3>⭐ Συχνά Χρησιμοποιούμενα</h3>
-                        <div class="bookmark-item click-sound" data-article="299" data-code="PK">
+                        <div class="bookmark-item clickable" onclick="showArticle('299', 'PK')">
                             <div>
                                 <div class="article-title">Άρθρο 299 - Απάτη</div>
                             </div>
                             <div class="article-code pk">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item click-sound" data-article="187A" data-code="PK">
+                        <div class="bookmark-item clickable" onclick="showArticle('187A', 'PK')">
                             <div>
                                 <div class="article-title">Άρθρο 187Α - Βιασμός</div>
                             </div>
                             <div class="article-code pk">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item click-sound" data-article="322" data-code="KPD">
+                        <div class="bookmark-item clickable" onclick="showArticle('322', 'KPD')">
                             <div>
                                 <div class="article-title">Άρθρο 322 - Προσωρινή κράτηση</div>
                             </div>
@@ -1102,6 +498,430 @@
 
                     <div class="home-section">
                         <h3>🕒 Πρόσφατα</h3>
-                        <div class="recent-item click-sound" data-article="280A" data-code="PK">
+                        <div class="recent-item clickable" onclick="showArticle('280A', 'PK')">
                             <div>
-                                <div class="article-title">
+                                <div class="article-title">Άρθρο 280Α - Υπεξαίρεση</div>
+                            </div>
+                            <div class="article-code pk">ΠΚ</div>
+                        </div>
+                        <div class="recent-item clickable" onclick="showArticle('324', 'KPD')">
+                            <div>
+                                <div class="article-title">Άρθρο 324 - Διάρκεια κράτησης</div>
+                            </div>
+                            <div class="article-code kpd">ΚΠΔ</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section" id="articleSection">
+                <div id="articleContent">
+                    <!-- Article content will be loaded here -->
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="footer-info">
+                📅 Ενημερωμένη μέχρι: 15/03/2025 | 🏛️ Τελευταίος Ν.: 5089/2024
+            </div>
+            <div class="footer-copyright">
+                © Dimitris Pavlidis
+            </div>
+        </footer>
+    </div>
+
+    <!-- Developer Info Modal -->
+    <div class="modal-overlay" id="devModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeDevInfo()">×</button>
+            <div class="modal-header">
+                <h2>⚖️ Codex Criminalis</h2>
+                <h3>Πληροφορίες Ανάπτυξης</h3>
+            </div>
+            
+            <div class="dev-info">
+                <strong>👨‍💻 Developer:</strong> Dimitris Pavlidis<br>
+                <strong>📧 Email:</strong> dimipav@gmail.com<br>
+                <strong>🗓️ Version:</strong> 1.4.0 (Simplified)<br>
+                <strong>📅 Last Update:</strong> 11/01/2025<br>
+                <strong>🏛️ Legal Version:</strong> Ν.5089/2024<br><br>
+                
+                <strong>🔧 Technical Stack:</strong><br>
+                • Progressive Web App (PWA)<br>
+                • Offline-first architecture<br>
+                • Mobile-optimized design<br>
+                • Simplified JavaScript<br><br>
+                
+                <strong>📊 Data Coverage:</strong><br>
+                • Sample άρθρα για testing<br>
+                • Version comparison ready<br>
+                • Expandable architecture<br>
+            </div>
+            
+            <button class="mode-btn clickable" onclick="closeDevInfo()">Κλείσιμο</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== GLOBAL STATE =====
+        let soundEnabled = true;
+        let currentSection = 'home';
+        
+        // Sample data
+        const sampleData = {
+            "PK": {
+                "299": {
+                    "title": "Απάτη",
+                    "text": "Όποιος με σκοπό να αποκομίσει για τον εαυτό του ή για άλλον παράνομο περιουσιακό όφελος, βλάπτει ξένη περιουσία προκαλώντας ή διατηρώντας σε κάποιον πλάνη με τεχνάσματα ή με παρασιώπηση της αλήθειας, τιμωρείται με φυλάκιση μέχρι δέκα έτη."
+                },
+                "280": {
+                    "title": "Κλοπή", 
+                    "text": "Όποιος αφαιρεί ξένο κινητό πράγμα με σκοπό να το ιδιοποιηθεί παράνομα, τιμωρείται με φυλάκιση μέχρι πέντε έτη ή με χρηματική ποινή."
+                },
+                "280A": {
+                    "title": "Υπεξαίρεση",
+                    "text": "Όποιος ως όργανο ή εκπρόσωπος νομικού προσώπου ή ως υπάλληλος ή εντολοδόχος φυσικού ή νομικού προσώπου ή ως διαχειριστής ξένης περιουσίας, παράνομα ιδιοποιείται χρήματα ή άλλα κινητά πράγματα που του έχουν εμπιστευθεί ή που έχει υπό την κατοχή του λόγω της ιδιότητάς του, τιμωρείται με φυλάκιση τουλάχιστον έξι μηνών."
+                },
+                "187A": {
+                    "title": "Βιασμός",
+                    "text": "Όποιος με σωματική βία ή με απειλή σοβαρού και άμεσου κινδύνου αναγκάζει κάποιον σε συνουσία ή σε άλλη ιδιαίτερα ταπεινωτική ή εξευτελιστική σεξουαλική πράξη, τιμωρείται με φυλάκιση από πέντε μέχρι είκοσι έτη."
+                }
+            },
+            "KPD": {
+                "322": {
+                    "title": "Προσωρινή κράτηση",
+                    "text": "Με βούλευμα ή διάταγμα του δικαστικού συμβουλίου ή του δικαστή ανακρίσεως, μπορεί να διαταχθεί η προσωρινή κράτηση του κατηγορούμενου εάν συντρέχουν οι προϋποθέσεις των άρθρων 282 και 307 και εάν είναι αναγκαία για να εξασφαλισθεί η παρουσία του κατηγορούμενου στη δίκη."
+                },
+                "324": {
+                    "title": "Διάρκεια κράτησης", 
+                    "text": "Η προσωρινή κράτηση του κατηγορούμενου για πλημμέλημα δεν μπορεί να υπερβεί τους έξι μήνες. Για κακούργημα δεν μπορεί να υπερβεί τους δεκαοκτώ μήνες μέχρι τη συζήτηση της υπόθεσης στο πρωτοβάθμιο δικαστήριο."
+                },
+                "320": {
+                    "title": "Ένταλμα σύλληψης",
+                    "text": "Ένταλμα σύλληψης εκδίδεται από τον εισαγγελέα ή τον δικαστή ανακρίσεως όταν υπάρχουν σοβαρές ενδείξεις ότι ο κατηγορούμενος έχει διαπράξει αξιόποινη πράξη."
+                },
+                "325": {
+                    "title": "Άρση προσωρινής κράτησης",
+                    "text": "Η προσωρινή κράτηση αίρεται αυτοδικαίως όταν παρέλθει ο χρόνος που προβλέπεται στο άρθρο 324 ή όταν εκδοθεί σχετική απόφαση του αρμόδιου δικαστηρίου."
+                }
+            }
+        };
+
+        // ===== UTILITY FUNCTIONS =====
+        function updateDebug(message) {
+            const debug = document.getElementById('debugInfo');
+            if (debug) {
+                debug.textContent = message;
+            }
+            console.log('DEBUG:', message);
+        }
+
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 3000);
+        }
+
+        function playClickSound() {
+            if (!soundEnabled) return;
+            
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.1);
+            } catch (e) {
+                console.log('Audio not supported:', e);
+            }
+        }
+
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Show target section
+            const targetSection = document.getElementById(sectionName + 'Section');
+            if (targetSection) {
+                targetSection.classList.add('active');
+                currentSection = sectionName;
+            }
+        }
+
+        // ===== MAIN FUNCTIONS =====
+        function goHome() {
+            updateDebug('goHome() called');
+            playClickSound();
+            showSection('home');
+            
+            // Clear active browse buttons
+            document.querySelectorAll('.code-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+        }
+
+        function toggleSound(event) {
+            if (event) event.stopPropagation();
+            updateDebug('toggleSound() called');
+            
+            soundEnabled = !soundEnabled;
+            const soundBtn = document.querySelector('.sound-toggle');
+            
+            if (soundEnabled) {
+                soundBtn.textContent = '🔊';
+                soundBtn.classList.remove('muted');
+                soundBtn.title = 'Απενεργοποίηση ήχων';
+                showToast('Ήχοι ενεργοποιημένοι');
+            } else {
+                soundBtn.textContent = '🔇';
+                soundBtn.classList.add('muted');
+                soundBtn.title = 'Ενεργοποίηση ήχων';
+                showToast('Ήχοι απενεργοποιημένοι');
+            }
+            
+            playClickSound();
+        }
+
+        function toggleFullscreen(event) {
+            if (event) event.stopPropagation();
+            updateDebug('toggleFullscreen() called');
+            playClickSound();
+            
+            showToast('Fullscreen λειτουργία σε ανάπτυξη');
+        }
+
+        function showDevInfo(event) {
+            if (event) event.stopPropagation();
+            updateDebug('showDevInfo() called');
+            playClickSound();
+            
+            const modal = document.getElementById('devModal');
+            if (modal) {
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeDevInfo() {
+            updateDebug('closeDevInfo() called');
+            playClickSound();
+            
+            const modal = document.getElementById('devModal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        function setSearchMode(mode, buttonElement) {
+            updateDebug('setSearchMode() called: ' + mode);
+            playClickSound();
+            
+            // Clear all active
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Set active
+            buttonElement.classList.add('active');
+        }
+
+        function showBrowse(codeType, buttonElement) {
+            updateDebug('showBrowse() called: ' + codeType);
+            playClickSound();
+            
+            // Clear all active browse buttons
+            document.querySelectorAll('.code-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Set this button active
+            buttonElement.classList.add('active');
+            
+            showToast(`Περιήγηση ${codeType === 'PK' ? 'Ποινικού Κώδικα' : 'ΚΠΔ'} σε ανάπτυξη`);
+        }
+
+        function performSearch() {
+            updateDebug('performSearch() called');
+            playClickSound();
+            
+            const query = document.getElementById('searchInput').value.trim();
+            if (!query) {
+                showToast('Εισάγετε όρο αναζήτησης');
+                return;
+            }
+            
+            showToast(`Αναζήτηση για: "${query}" σε ανάπτυξη`);
+        }
+
+        function showArticle(articleNum, codeType) {
+            updateDebug(`showArticle() called: ${articleNum} ${codeType}`);
+            playClickSound();
+            
+            const article = sampleData[codeType] && sampleData[codeType][articleNum];
+            if (!article) {
+                showToast('Το άρθρο δεν βρέθηκε');
+                return;
+            }
+            
+            const codeName = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
+            const codeIcon = codeType === 'PK' ? '📕' : '📘';
+            
+            const articleContent = document.getElementById('articleContent');
+            if (articleContent) {
+                articleContent.innerHTML = `
+                    <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                            <button class="mode-btn clickable" onclick="goHome()">← Αρχική</button>
+                            <div style="font-weight: 600; color: #2c3e50;">ΑΡΘΡΟ ${articleNum} ${codeName}</div>
+                            <div style="opacity: 0.5;">📄</div>
+                        </div>
+                        
+                        <div style="border-bottom: 2px solid #3498db; padding-bottom: 15px; margin-bottom: 20px;">
+                            <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 5px;">Άρθρο ${articleNum} - ${article.title}</h2>
+                            <div style="color: #7f8c8d; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
+                                <span style="font-size: 18px;">${codeIcon}</span>
+                                ${codeName} | Ενημερωμένη έκδοση
+                            </div>
+                        </div>
+                        
+                        <div style="line-height: 1.6; font-size: 16px; color: #2c3e50; margin-bottom: 20px;">
+                            <p>${article.text}</p>
+                        </div>
+                        
+                        <div style="display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #dee2e6; flex-wrap: wrap;">
+                            <button class="mode-btn clickable" onclick="copyArticle('${articleNum}', '${codeType}')">📋 Αντιγραφή</button>
+                            <button class="mode-btn clickable" onclick="showToast('Share λειτουργία σε ανάπτυξη')">📤 Κοινοποίηση</button>
+                            <button class="mode-btn clickable" onclick="showToast('Print λειτουργία σε ανάπτυξη')">🖨️ Εκτύπωση</button>
+                        </div>
+                    </div>
+                `;
+                
+                showSection('article');
+            }
+        }
+
+        function copyArticle(articleNum, codeType) {
+            updateDebug(`copyArticle() called: ${articleNum} ${codeType}`);
+            playClickSound();
+            
+            const article = sampleData[codeType] && sampleData[codeType][articleNum];
+            if (!article) {
+                showToast('Άρθρο δεν βρέθηκε');
+                return;
+            }
+            
+            const codeName = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
+            const text = `Άρθρο ${articleNum} ${codeName} - ${article.title}\n\n${article.text}`;
+            
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Το άρθρο αντιγράφηκε στο πρόχειρο');
+                }).catch(() => {
+                    showToast('Αποτυχία αντιγραφής');
+                });
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Το άρθρο αντιγράφηκε στο πρόχειρο');
+                } catch {
+                    showToast('Αποτυχία αντιγραφής');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebug('DOM Content Loaded - Initializing...');
+            
+            // Test all functions
+            const functions = ['goHome', 'toggleSound', 'toggleFullscreen', 'showDevInfo', 'closeDevInfo', 'showBrowse', 'performSearch', 'showArticle'];
+            const missing = functions.filter(fn => typeof window[fn] !== 'function');
+            
+            if (missing.length === 0) {
+                updateDebug('✅ All functions loaded successfully');
+                showToast('Codex Criminalis φορτώθηκε επιτυχώς!');
+            } else {
+                updateDebug('❌ Missing functions: ' + missing.join(', '));
+            }
+            
+            // Add Enter key support for search
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        performSearch();
+                    }
+                });
+            }
+            
+            // Add click outside modal to close
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal-overlay')) {
+                    closeDevInfo();
+                }
+            });
+            
+            // Add ESC key support
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    closeDevInfo();
+                }
+            });
+            
+            // Hide debug info after 5 seconds
+            setTimeout(() => {
+                const debug = document.getElementById('debugInfo');
+                if (debug) {
+                    debug.style.display = 'none';
+                }
+            }, 5000);
+        });
+
+        // Make functions globally available
+        window.goHome = goHome;
+        window.toggleSound = toggleSound;
+        window.toggleFullscreen = toggleFullscreen;
+        window.showDevInfo = showDevInfo;
+        window.closeDevInfo = closeDevInfo;
+        window.setSearchMode = setSearchMode;
+        window.showBrowse = showBrowse;
+        window.performSearch = performSearch;
+        window.showArticle = showArticle;
+        window.copyArticle = copyArticle;
+
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            updateDebug('❌ JavaScript Error: ' + e.message);
+            console.error('Error:', e);
+        });
+
+        // Initial status
+        updateDebug('JavaScript loaded - Ready!');
+    </script>
+</body>
+</html>
