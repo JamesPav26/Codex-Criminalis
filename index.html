@@ -15,6 +15,7 @@
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="expires" content="0">
+    <meta name="version" content="v1.3.0-20250111">
     
     <style>
         * {
@@ -1036,12 +1037,12 @@
 </head>
 <body>
     <div class="container">
-        <header class="header" onclick="app && app.goHome()">
-            <button class="sound-toggle" onclick="app && app.toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
+        <header class="header" onclick="window.goHome()">
+            <button class="sound-toggle" onclick="window.toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
             
             <div class="header-controls">
-                <button class="header-btn click-sound" onclick="app && app.toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
-                <button class="header-btn click-sound" onclick="app && app.showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
+                <button class="header-btn click-sound" onclick="window.toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
+                <button class="header-btn click-sound" onclick="window.showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
             </div>
             
             <h1>⚖️ Codex Criminalis</h1>
