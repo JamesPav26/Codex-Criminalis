@@ -5,88 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Codex Criminalis - Ελληνικός Ποινικός Κώδικας</title>
     
+    <!-- CSS FILE LINK -->
+    <link rel="stylesheet" href="styles.css">
+    
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#3498db">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="Codex Criminalis">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    
-    <!-- Cache Control -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    
-    <!-- Styles -->
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <header class="header" onclick="showHome()">
-            <div class="header-controls left">
-                <button class="header-btn" onclick="event.stopPropagation(); toggleSound()" title="Ήχος On/Off" id="soundBtn">
-                    🔊
-                </button>
-            </div>
-            
-            <div>
-                <h1>⚖️ Codex Criminalis</h1>
-                <div class="subtitle">Ποινικός Κώδικας & Κώδικας Ποινικής Δικονομίας</div>
-            </div>
-            
-            <div class="header-controls right">
-                <button class="header-btn" onclick="event.stopPropagation(); toggleFullscreen()" title="Πλήρης οθόνη" id="fullscreenBtn">
-                    ⛶
-                </button>
-                <button class="header-btn" onclick="event.stopPropagation(); showDevInfo()" title="Πληροφορίες εφαρμογής">
-                    ℹ️
-                </button>
+        <!-- Header με controls -->
+        <header class="header">
+            <div class="header-content">
+                <div class="header-left">
+                    <button class="header-btn" id="homeBtn" title="Αρχική">🏠</button>
+                </div>
+                <div class="header-center">
+                    <h1>⚖️ Codex Criminalis</h1>
+                    <div class="subtitle">Ποινικός Κώδικας & Κώδικας Ποινικής Δικονομίας</div>
+                </div>
+                <div class="header-right">
+                    <button class="header-btn" id="soundToggle" title="Ήχοι">🔊</button>
+                    <button class="header-btn" id="fullscreenBtn" title="Πλήρης οθόνη">⛶</button>
+                    <button class="header-btn" id="devInfoBtn" title="Πληροφορίες">ℹ️</button>
+                </div>
             </div>
         </header>
 
+        <!-- Search Section -->
         <div class="search-section">
             <div class="search-dual">
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη, 280A)" id="searchInput">
-                    <button class="search-btn" onclick="performSearch()">🔍</button>
+                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη, 280.3)" id="searchInput">
+                    <button class="search-btn" id="searchBtn">🔍</button>
                 </div>
-                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος/Εδάφιο" id="paragraphInput" disabled>
+                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος/Εδάφιο" id="paragraphInput">
             </div>
+            
             <div class="search-mode">
-                <button class="mode-btn active quick" onclick="setSearchMode('quick')">⚡ Γρήγορη αναζήτηση</button>
-                <button class="mode-btn extended" onclick="setSearchMode('extended')">🔍 Εκτεταμένη αναζήτηση</button>
+                <button class="mode-btn active" data-mode="quick">⚡ Γρήγορη αναζήτηση</button>
+                <button class="mode-btn" data-mode="extended">🔍 Εκτεταμένη αναζήτηση</button>
             </div>
+            
             <div class="browse-buttons">
-                <button class="code-btn" onclick="showBrowse('PK')" id="browseButtonPK">
+                <button class="code-btn" data-action="browse" data-code="PK">
                     <span class="icon">📕</span>
                     ΠΟΙΝΙΚΟΣ ΚΩΔΙΚΑΣ
                 </button>
-                <button class="code-btn" onclick="showBrowse('KPD')" id="browseButtonKPD">
+                <button class="code-btn" data-action="browse" data-code="KPD">
                     <span class="icon">📘</span>
                     ΚΩΔΙΚΑΣ ΠΟΙΝΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ
                 </button>
             </div>
         </div>
 
+        <!-- Main Content -->
         <main class="main-content">
             <!-- Home Section -->
             <div class="section active" id="homeSection">
                 <div class="home-sections">
                     <div class="home-section">
                         <h3>⭐ Συχνά Χρησιμοποιούμενα</h3>
-                        <div class="bookmark-item" onclick="showArticle('299', 'PK')">
+                        <div class="bookmark-item" data-article="299" data-code="PK">
                             <div>
                                 <div class="article-title">Άρθρο 299 - Απάτη</div>
                             </div>
                             <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item" onclick="showArticle('187A', 'PK')">
+                        <div class="bookmark-item" data-article="187A" data-code="PK">
                             <div>
                                 <div class="article-title">Άρθρο 187Α - Βιασμός</div>
                             </div>
                             <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item" onclick="showArticle('322', 'KPD')">
+                        <div class="bookmark-item" data-article="322" data-code="KPD">
                             <div>
                                 <div class="article-title">Άρθρο 322 - Προσωρινή κράτηση</div>
                             </div>
@@ -96,13 +91,13 @@
 
                     <div class="home-section">
                         <h3>🕒 Πρόσφατα</h3>
-                        <div class="recent-item" onclick="showArticle('280A', 'PK')">
+                        <div class="recent-item" data-article="280A" data-code="PK">
                             <div>
                                 <div class="article-title">Άρθρο 280Α - Υπεξαίρεση</div>
                             </div>
                             <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="recent-item" onclick="showArticle('324', 'KPD')">
+                        <div class="recent-item" data-article="324" data-code="KPD">
                             <div>
                                 <div class="article-title">Άρθρο 324 - Διάρκεια κράτησης</div>
                             </div>
@@ -134,10 +129,10 @@
             </div>
         </main>
 
+        <!-- Footer -->
         <footer class="footer">
             <div class="footer-info">
-                📅 Ενημερωμένη μέχρι: 15/03/2025 | 🏛️ Τελευταίος Ν.: 5089/2024<br>
-                <small style="opacity: 0.7;">Τελευταία ενημέρωση: 11.07.2025</small>
+                📅 Ενημερωμένη μέχρι: 11.07.2025 | 🏛️ Τελευταίος Ν.: 5089/2024
             </div>
             <div class="footer-copyright">
                 © Dimitris Pavlidis
@@ -145,81 +140,61 @@
         </footer>
     </div>
 
-    <!-- Developer Info Modal -->
-    <div id="devModal" class="modal">
+    <!-- Dev Info Modal -->
+    <div class="modal-overlay" id="devModal">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>📋 Πληροφορίες Εφαρμογής</h2>
-                <button class="close-btn" onclick="closeDevInfo()">&times;</button>
+                <h3>🛠️ Πληροφορίες Εφαρμογής</h3>
+                <button class="modal-close">&times;</button>
             </div>
             <div class="modal-body">
-                <h3>🎯 Βασικά Στοιχεία</h3>
-                <div class="tech-grid">
-                    <div class="tech-item">
-                        <strong>📱 Εφαρμογή:</strong>
-                        Codex Criminalis v1.4.0
+                <div class="dev-info">
+                    <div class="dev-item">
+                        <strong>📦 Έκδοση:</strong> v1.4.0 Complete Rebuild
                     </div>
-                    <div class="tech-item">
-                        <strong>🏗️ Αρχιτεκτονική:</strong>
-                        Progressive Web App (PWA)
+                    <div class="dev-item">
+                        <strong>📅 Ημερομηνία:</strong> 11.07.2025
                     </div>
-                    <div class="tech-item">
-                        <strong>💾 Λειτουργία:</strong>
-                        Offline-first, Mobile-optimized
+                    <div class="dev-item">
+                        <strong>🎨 Θέματα:</strong> 5 διαθέσιμα χρώματα
                     </div>
-                    <div class="tech-item">
-                        <strong>🎨 Design:</strong>
-                        Mobile-first responsive UI
+                    <div class="dev-item">
+                        <strong>📊 Άρθρα:</strong> ΠΚ (4) + ΚΠΔ (4) = 8 total
                     </div>
-                </div>
-
-                <h3>⚡ Τεχνικά Χαρακτηριστικά</h3>
-                <ul>
-                    <li><strong>🔍 Έξυπνη αναζήτηση:</strong> Αναγνώριση άρθρων & κειμένου με highlighting</li>
-                    <li><strong>🧭 Navigation:</strong> Previous/Next με smart sorting</li>
-                    <li><strong>🔖 Bookmarks:</strong> Ενοποιημένο σύστημα σελιδοδεικτών</li>
-                    <li><strong>🟣 Version comparison:</strong> Συγκριτικές προβολές εκδόσεων</li>
-                    <li><strong>📤 Export:</strong> Copy, Share, Print, PDF capabilities</li>
-                </ul>
-
-                <h3>📊 Δεδομένα Δοκιμής</h3>
-                <ul>
-                    <li><strong>📕 ΠΚ άρθρα:</strong> 280, 280Α, 299, 187Α (4 άρθρα)</li>
-                    <li><strong>📘 ΚΠΔ άρθρα:</strong> 320, 322, 324, 325 (4 άρθρα)</li>
-                    <li><strong>🔄 Versions:</strong> 2024 & 2020 εκδόσεις για testing</li>
-                    <li><strong>⭐ Ready for:</strong> 500+ ΠΚ + 600+ ΚΠΔ άρθρα</li>
-                </ul>
-
-                <h3>🎨 UI/UX Features</h3>
-                <ul>
-                    <li><strong>🎵 Subtle sounds:</strong> Keyboard-style click feedback</li>
-                    <li><strong>🌈 Color coding:</strong> 5 διακριτά χρώματα per λειτουργία</li>
-                    <li><strong>⛶ Fullscreen:</strong> Immersive reading experience</li>
-                    <li><strong>📱 Touch-optimized:</strong> Mobile-first interaction design</li>
-                </ul>
-
-                <div style="text-align: center; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                    <strong>🚀 Status:</strong> Ready για production data integration<br>
-                    <strong>📅 Build:</strong> July 11, 2025 | <strong>🔧 Version:</strong> 1.4.0 Complete
+                    <div class="dev-item">
+                        <strong>🔍 Search:</strong> Smart parsing + highlighting
+                    </div>
+                    <div class="dev-item">
+                        <strong>📱 PWA:</strong> Offline ready
+                    </div>
+                    <div class="dev-item">
+                        <strong>🏗️ Αρχιτεκτονική:</strong> HTML/CSS/JS separation
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- Fullscreen overlay -->
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <div class="fullscreen-content">
+            <button class="fullscreen-close" id="fullscreenClose">✕</button>
+            <div id="fullscreenContent">
+                <!-- Content will be moved here in fullscreen -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT FILE LINK -->
     <script src="script.js"></script>
-    
+
     <!-- PWA Service Worker Registration -->
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(registration => {
-                        console.log('PWA: Service Worker registered successfully');
-                    })
-                    .catch(error => {
-                        console.log('PWA: Service Worker registration failed:', error);
-                    });
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('PWA: Service Worker registered'))
+                    .catch(error => console.log('PWA: Service Worker registration failed'));
             });
         }
     </script>
