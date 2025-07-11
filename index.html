@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="el">
 <head>
@@ -110,7 +109,6 @@
             background: #2980b9;
         }
 
-        /* Original CSS continues here - copy from existing index.html */
         .search-section {
             padding: 20px;
             background: #f8f9fa;
@@ -204,22 +202,58 @@
 
         .browse-btn {
             padding: 15px 20px;
-            background: #34495e;
-            color: white;
-            border: none;
+            background: white;
+            color: #34495e;
+            border: 2px solid #ddd;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
 
-        .browse-btn:hover {
-            background: #2c3e50;
+        .browse-btn.pk {
+            border-color: #e74c3c;
+        }
+
+        .browse-btn.pk .icon {
+            color: #e74c3c;
+        }
+
+        .browse-btn.pk:hover,
+        .browse-btn.pk.active {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+
+        .browse-btn.pk:hover .icon,
+        .browse-btn.pk.active .icon {
+            color: white;
+        }
+
+        .browse-btn.kpd {
+            border-color: #3498db;
+        }
+
+        .browse-btn.kpd .icon {
+            color: #3498db;
+        }
+
+        .browse-btn.kpd:hover,
+        .browse-btn.kpd.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+
+        .browse-btn.kpd:hover .icon,
+        .browse-btn.kpd.active .icon {
+            color: white;
         }
 
         .main-content {
@@ -496,11 +530,11 @@
                 </div>
                 
                 <div class="browse-buttons">
-                    <button class="browse-btn" onclick="app.showBrowse('PK')">
-                        📕 ΠΟΙΝΙΚΟΣ ΚΩΔΙΚΑΣ
+                    <button class="browse-btn pk" onclick="app.showBrowse('PK')">
+                        <span class="icon">📕</span> ΠΟΙΝΙΚΟΣ ΚΩΔΙΚΑΣ
                     </button>
-                    <button class="browse-btn" onclick="app.showBrowse('KPD')">
-                        📘 ΚΩΔΙΚΑΣ ΠΟΙΝΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ
+                    <button class="browse-btn kpd" onclick="app.showBrowse('KPD')">
+                        <span class="icon">📘</span> ΚΩΔΙΚΑΣ ΠΟΙΝΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ
                     </button>
                 </div>
             </div>
@@ -569,6 +603,76 @@
     <div class="toast" id="toast"></div>
 
     <script>
+        // Sound Effects
+        class SoundManager {
+            constructor() {
+                this.context = null;
+                this.enabled = true;
+                this.initAudio();
+            }
+
+            initAudio() {
+                try {
+                    this.context = new (window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    console.log('Web Audio API not supported');
+                    this.enabled = false;
+                }
+            }
+
+            playClickSound() {
+                if (!this.enabled || !this.context) return;
+                
+                try {
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.context.destination);
+                    
+                    // Soft iPhone-style click
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(1200, this.context.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(800, this.context.currentTime + 0.05);
+                    
+                    // Very low volume for subtle effect
+                    gainNode.gain.setValueAtTime(0.03, this.context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.05);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.05);
+                } catch (e) {
+                    console.log('Sound playback failed');
+                }
+            }
+
+            playSuccessSound() {
+                if (!this.enabled || !this.context) return;
+                
+                try {
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.context.destination);
+                    
+                    // Soft success chime
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(800, this.context.currentTime);
+                    oscillator.frequency.setValueAtTime(1000, this.context.currentTime + 0.08);
+                    
+                    // Low volume
+                    gainNode.gain.setValueAtTime(0.05, this.context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.15);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.15);
+                } catch (e) {
+                    console.log('Sound playback failed');
+                }
+            }
+        }
+
         // Data Manager Class
         class DataManager {
             constructor() {
@@ -774,6 +878,7 @@
         class CodexApp {
             constructor() {
                 this.dataManager = new DataManager();
+                this.soundManager = new SoundManager();
                 this.search = null;
                 this.currentSection = 'home';
                 this.init();
@@ -819,19 +924,30 @@
 
                 searchInput.addEventListener('keypress', (e) => {
                     if (e.key === 'Enter') {
+                        this.soundManager.playClickSound();
                         this.performSearch(searchInput.value, paragraphInput.value);
                     }
                 });
 
-                // Add click listeners for home items
+                // Add sound effects to all clickable elements
                 document.addEventListener('click', (e) => {
                     if (e.target.closest('.bookmark-item') || e.target.closest('.recent-item')) {
+                        this.soundManager.playClickSound();
                         const item = e.target.closest('.bookmark-item') || e.target.closest('.recent-item');
                         const article = item.dataset.article;
                         const code = item.dataset.code;
                         if (article && code) {
                             this.showArticle(article, code);
                         }
+                    }
+                    
+                    // Sound for buttons and interactive elements
+                    if (e.target.matches('button') || e.target.closest('button')) {
+                        this.soundManager.playClickSound();
+                    }
+                    
+                    if (e.target.closest('.search-result')) {
+                        this.soundManager.playClickSound();
                     }
                 });
             }
@@ -899,20 +1015,40 @@
                         const snippet = result.text.length > 150 ? 
                             result.text.substring(0, 150) + '...' : result.text;
                         
+                        const codeDisplay = result.code === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
+                        
+                        // Highlight search terms in snippet
+                        const highlightedSnippet = this.highlightSearchTerms(snippet, query);
+                        
                         html += `
                             <div class="search-result" onclick="app.showArticle('${result.article}', '${result.code}', ${paragraph || 'null'})">
                                 <div class="result-header">
-                                    <div class="result-article">Άρθρο ${result.article} ${result.code}</div>
-                                    <div class="result-code ${result.code.toLowerCase()}">${result.code}</div>
+                                    <div class="result-article">Άρθρο ${result.article} ${codeDisplay}</div>
+                                    <div class="result-code ${result.code.toLowerCase()}">${codeDisplay}</div>
                                 </div>
                                 <div class="result-title">${result.title}</div>
-                                <div class="result-snippet">${snippet}</div>
+                                <div class="result-snippet">${highlightedSnippet}</div>
                             </div>
                         `;
                     });
                 }
                 
                 searchResults.innerHTML = html;
+            }
+
+            highlightSearchTerms(text, query) {
+                if (!query.trim()) return text;
+                
+                // Extract keywords from query
+                const keywords = query.toLowerCase().split(/\s+/).filter(word => word.length > 2);
+                let highlightedText = text;
+                
+                keywords.forEach(keyword => {
+                    const regex = new RegExp(`(${keyword})`, 'gi');
+                    highlightedText = highlightedText.replace(regex, '<mark style="background: #fff3cd; padding: 1px 2px; border-radius: 2px;">$1</mark>');
+                });
+                
+                return highlightedText;
             }
 
             showArticle(articleNum, codeType, paragraph = null) {
@@ -924,11 +1060,13 @@
                     return;
                 }
                 
+                const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
+                
                 let html = `
                     <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6;">
                         <div style="border-bottom: 2px solid #3498db; padding-bottom: 15px; margin-bottom: 20px;">
                             <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 5px;">
-                                Άρθρο ${articleNum} ${codeType}
+                                Άρθρο ${articleNum} ${codeDisplay}
                             </h2>
                             <div style="color: #7f8c8d; font-size: 16px; font-weight: 600;">
                                 <span style="color: ${codeType === 'PK' ? '#e74c3c' : '#3498db'}">
@@ -978,6 +1116,45 @@
                                 ${this.search.bookmarks.has(articleNum) ? '⭐' : '☆'} Σελιδοδείκτης
                             </button>
                         </div>
+                `;
+                
+                // Add version management if article has multiple versions
+                if (article.versions && article.versions.length > 1) {
+                    html += `
+                        <div style="background: #e8f4f8; border: 1px solid #3498db; border-radius: 8px; padding: 15px; margin-top: 20px;">
+                            <h4 style="color: #2c3e50; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+                                🔄 Ιστορικό εκδόσεων
+                            </h4>
+                            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+                    `;
+                    
+                    article.versions.forEach((version, index) => {
+                        const isActive = index === 0; // First version is current
+                        html += `
+                            <button style="padding: 6px 12px; border: 1px solid #3498db; background: ${isActive ? '#3498db' : 'white'}; color: ${isActive ? 'white' : '#3498db'}; border-radius: 4px; cursor: pointer; font-size: 12px; margin-right: 8px; margin-bottom: 8px; transition: all 0.3s ease;" 
+                                    onclick="app.showVersion('${articleNum}', '${codeType}', ${index})"
+                                    onmouseover="if (!${isActive}) { this.style.background = '#3498db'; this.style.color = 'white'; }"
+                                    onmouseout="if (!${isActive}) { this.style.background = 'white'; this.style.color = '#3498db'; }">
+                                Ν.${version.law} (${version.date})
+                            </button>
+                        `;
+                    });
+                    
+                    html += `
+                            </div>
+                            <div style="margin: 10px 0; text-align: center;">
+                                <button style="padding: 8px 16px; background: #9b59b6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; transition: background 0.3s ease;" 
+                                        onclick="app.showVersionComparison('${articleNum}', '${codeType}')"
+                                        onmouseover="this.style.background = '#8e44ad'"
+                                        onmouseout="this.style.background = '#9b59b6'">
+                                    📊 Συγκριτική προβολή
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `
                     </div>
                 `;
                 
@@ -1019,12 +1196,13 @@
                     }
                     
                     if (article) {
+                        const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
                         html += `
                             <div class="bookmark-item" data-article="${articleNum}" data-code="${codeType}">
                                 <div>
                                     <div class="article-title">Άρθρο ${articleNum} - ${article.title}</div>
                                 </div>
-                                <div class="article-code ${codeType}">${codeType}</div>
+                                <div class="article-code ${codeType}">${codeDisplay}</div>
                             </div>
                         `;
                     }
@@ -1056,12 +1234,13 @@
                     }
                     
                     if (article) {
+                        const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
                         html += `
                             <div class="recent-item" data-article="${articleNum}" data-code="${codeType}">
                                 <div>
                                     <div class="article-title">Άρθρο ${articleNum} - ${article.title}</div>
                                 </div>
-                                <div class="article-code ${codeType}">${codeType}</div>
+                                <div class="article-code ${codeType}">${codeDisplay}</div>
                             </div>
                         `;
                     }
@@ -1075,6 +1254,10 @@
             }
 
             showBrowse(codeType) {
+                // Add active state to browse buttons
+                document.querySelectorAll('.browse-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`.browse-btn.${codeType.toLowerCase()}`).classList.add('active');
+                
                 const allData = this.dataManager.getAllData();
                 const codeName = codeType === 'PK' ? 'Ποινικός Κώδικας' : 'Κώδικας Ποινικής Δικονομίας';
                 const articles = Object.keys(allData[codeType] || {}).sort((a, b) => {
@@ -1094,6 +1277,8 @@
                     }
                     return aData.letter.localeCompare(bData.letter);
                 });
+                
+                const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
                 
                 let html = `
                     <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6;">
@@ -1136,12 +1321,14 @@
             copyArticle(articleNum, codeType) {
                 const allData = this.dataManager.getAllData();
                 const article = allData[codeType][articleNum];
+                const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
                 
                 if (article) {
-                    const text = `Άρθρο ${articleNum} ${codeType} - ${article.title}\n\n${article.text}`;
+                    const text = `Άρθρο ${articleNum} ${codeDisplay} - ${article.title}\n\n${article.text}`;
                     
                     if (navigator.clipboard) {
                         navigator.clipboard.writeText(text).then(() => {
+                            this.soundManager.playSuccessSound();
                             this.showToast('Το άρθρο αντιγράφηκε');
                         });
                     } else {
@@ -1152,6 +1339,7 @@
                         textArea.select();
                         document.execCommand('copy');
                         document.body.removeChild(textArea);
+                        this.soundManager.playSuccessSound();
                         this.showToast('Το άρθρο αντιγράφηκε');
                     }
                 }
@@ -1160,14 +1348,15 @@
             shareArticle(articleNum, codeType) {
                 const allData = this.dataManager.getAllData();
                 const article = allData[codeType][articleNum];
+                const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
                 
                 if (article) {
-                    const text = `Άρθρο ${articleNum} ${codeType} - ${article.title}\n\n${article.text}`;
+                    const text = `Άρθρο ${articleNum} ${codeDisplay} - ${article.title}\n\n${article.text}`;
                     const url = window.location.href;
                     
                     if (navigator.share) {
                         navigator.share({
-                            title: `Άρθρο ${articleNum} ${codeType}`,
+                            title: `Άρθρο ${articleNum} ${codeDisplay}`,
                             text: text,
                             url: url
                         });
@@ -1190,6 +1379,7 @@
                     buttonElement.style.background = '#3498db';
                     buttonElement.style.color = 'white';
                     buttonElement.innerHTML = '⭐ Σελιδοδείκτης';
+                    this.soundManager.playSuccessSound();
                     this.showToast('Προστέθηκε στους σελιδοδείκτες');
                 }
                 
@@ -1205,6 +1395,98 @@
                 setTimeout(() => {
                     toast.classList.remove('show');
                 }, 3000);
+            }
+
+            showVersion(articleNum, codeType, versionIndex) {
+                const allData = this.dataManager.getAllData();
+                const article = allData[codeType][articleNum];
+                
+                if (!article || !article.versions || !article.versions[versionIndex]) {
+                    return;
+                }
+                
+                // Update active button states
+                const versionButtons = document.querySelectorAll(`[onclick*="showVersion('${articleNum}'"]`);
+                versionButtons.forEach((btn, index) => {
+                    if (index === versionIndex) {
+                        btn.style.background = '#3498db';
+                        btn.style.color = 'white';
+                    } else {
+                        btn.style.background = 'white';
+                        btn.style.color = '#3498db';
+                    }
+                });
+                
+                // Update content with selected version
+                const version = article.versions[versionIndex];
+                const contentDiv = document.querySelector('#articleView .article-view div[style*="line-height"]');
+                
+                if (contentDiv) {
+                    contentDiv.innerHTML = `<p>${version.text}</p>`;
+                }
+                
+                this.soundManager.playClickSound();
+            }
+
+            showVersionComparison(articleNum, codeType) {
+                const allData = this.dataManager.getAllData();
+                const article = allData[codeType][articleNum];
+                
+                if (!article || !article.versions || article.versions.length < 2) {
+                    return;
+                }
+                
+                const codeDisplay = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
+                
+                let html = `
+                    <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6;">
+                        <div style="border-bottom: 2px solid #9b59b6; padding-bottom: 15px; margin-bottom: 20px;">
+                            <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 5px;">
+                                📊 Συγκριτική προβολή - Άρθρο ${articleNum} ${codeDisplay}
+                            </h2>
+                            <div style="color: #7f8c8d; font-size: 16px; font-weight: 600;">
+                                ${article.title}
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                `;
+                
+                // Show first two versions side by side
+                const version1 = article.versions[0];
+                const version2 = article.versions[1];
+                
+                html += `
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 6px; border: 1px solid #ddd;">
+                                <h5 style="color: #2c3e50; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #3498db; font-size: 14px;">
+                                    📅 Τρέχουσα έκδοση - Ν.${version1.law} (${version1.date})
+                                </h5>
+                                <div style="line-height: 1.6; font-size: 14px; color: #2c3e50;">
+                                    ${version1.text}
+                                </div>
+                            </div>
+                            
+                            <div style="padding: 15px; background: #f8f9fa; border-radius: 6px; border: 1px solid #ddd;">
+                                <h5 style="color: #2c3e50; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 2px solid #e74c3c; font-size: 14px;">
+                                    📅 Προηγούμενη έκδοση - Ν.${version2.law} (${version2.date})
+                                </h5>
+                                <div style="line-height: 1.6; font-size: 14px; color: #2c3e50;">
+                                    ${version2.text}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 20px; text-align: center;">
+                            <button style="padding: 10px 20px; background: #34495e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 14px;" 
+                                    onclick="app.showArticle('${articleNum}', '${codeType}')">
+                                ← Επιστροφή στο άρθρο
+                            </button>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('articleView').innerHTML = html;
+                this.soundManager.playClickSound();
             }
         }
 
