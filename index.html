@@ -12,459 +12,56 @@
     <meta name="apple-mobile-web-app-title" content="Codex Criminalis">
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     
-    <!-- AGGRESSIVE Cache busting -->
-    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="pragma" content="no-cache">
-    <meta http-equiv="expires" content="0">
-    <meta name="build" content="20250111-1500">
+    <!-- Cache Control -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .header:hover {
-            background: linear-gradient(135deg, #34495e 0%, #2980b9 100%);
-        }
-
-        .header h1 {
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 5px;
-        }
-
-        .header .subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .version-display {
-            font-size: 11px;
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        /* Header controls */
-        .sound-toggle, .header-btn {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            z-index: 101;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .sound-toggle {
-            top: 15px;
-            left: 15px;
-            font-size: 16px;
-        }
-
-        .sound-toggle:hover, .header-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .sound-toggle.muted {
-            opacity: 0.5;
-        }
-
-        .header-controls {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            gap: 8px;
-            z-index: 101;
-        }
-
-        .search-section {
-            padding: 20px;
-            background: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-        }
-
-        .search-dual {
-            display: grid;
-            grid-template-columns: 3fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 15px 50px 15px 20px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .search-input.paragraph-search {
-            padding: 8px 12px;
-            height: 50px;
-        }
-
-        .search-input:focus {
-            border-color: #3498db;
-            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
-        }
-
-        .search-btn {
-            position: absolute;
-            right: 5px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: #3498db;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-
-        .search-mode {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .mode-btn {
-            padding: 12px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            text-align: center;
-            font-weight: 500;
-        }
-
-        .mode-btn.active {
-            background: #27ae60;
-            color: white;
-            border-color: #27ae60;
-        }
-
-        .mode-btn[data-mode="extended"].active {
-            background: #f39c12 !important;
-            border-color: #f39c12 !important;
-            color: white !important;
-        }
-
-        .browse-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .code-btn {
-            padding: 15px;
-            border: 2px solid #ddd;
-            background: white;
-            border-radius: 12px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: #333;
-        }
-
-        .code-btn.active.pk-btn {
-            background: #e74c3c;
-            color: white;
-            border-color: #e74c3c;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
-        }
-
-        .code-btn.active.kpd-btn {
-            background: #2471a3;
-            color: white;
-            border-color: #2471a3;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(36, 113, 163, 0.3);
-        }
-
-        .code-btn .icon {
-            font-size: 24px;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .main-content {
-            padding: 20px;
-            min-height: 60vh;
-        }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .home-sections {
-            display: grid;
-            gap: 20px;
-        }
-
-        .home-section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            border: 1px solid #dee2e6;
-        }
-
-        .home-section h3 {
-            color: #2c3e50;
-            margin-bottom: 15px;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .bookmark-item, .recent-item {
-            background: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 12px 15px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .bookmark-item:hover, .recent-item:hover {
-            background: #f8f9fa;
-            border-color: #3498db;
-        }
-
-        .article-title {
-            font-weight: 500;
-            color: #2c3e50;
-        }
-
-        .article-code {
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .article-code.pk {
-            background: #ffebee;
-            color: #c62828;
-        }
-
-        .article-code.kpd {
-            background: #e3f2fd;
-            color: #1565c0;
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 12px;
-            padding: 30px;
-            max-width: 500px;
-            margin: 20px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            position: relative;
-        }
-
-        .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: #7f8c8d;
-        }
-
-        .dev-info {
-            text-align: left;
-            margin: 20px 0;
-            padding: 15px;
-            background: #f8f9fa;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .footer {
-            background: #2c3e50;
-            color: white;
-            padding: 20px;
-            text-align: center;
-            margin-top: auto;
-        }
-
-        .footer-info {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .footer-copyright {
-            font-size: 11px;
-            opacity: 0.6;
-        }
-
-        /* Click effects */
-        .clickable {
-            transition: all 0.1s ease;
-        }
-        
-        .clickable:active {
-            transform: scale(0.98);
-            filter: brightness(0.95);
-        }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2c3e50;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            z-index: 1000;
-            font-size: 14px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-
-        /* Debug info */
-        .debug-info {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 11px;
-            z-index: 999;
-        }
-
-        @media (max-width: 768px) {
-            .browse-buttons {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Debug Info -->
-    <div class="debug-info" id="debugInfo">Loading...</div>
-
     <div class="container">
-        <header class="header clickable" onclick="goHome()">
-            <button class="sound-toggle clickable" onclick="toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
-            
-            <div class="header-controls">
-                <button class="header-btn clickable" onclick="toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
-                <button class="header-btn clickable" onclick="showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
+        <header class="header" onclick="showHome()">
+            <div class="header-controls left">
+                <button class="header-btn" onclick="event.stopPropagation(); toggleSound()" title="Ήχος On/Off" id="soundBtn">
+                    🔊
+                </button>
             </div>
             
-            <h1>⚖️ Codex Criminalis</h1>
-            <div class="subtitle">Ποινικός Κώδικας & Κώδικας Ποινικής Δικονομίας</div>
-            <div class="version-display">📅 Ενημερωμένη μέχρι: 15/03/2025 | 🏛️ Ν.: 5089/2024</div>
+            <div>
+                <h1>⚖️ Codex Criminalis</h1>
+                <div class="subtitle">Ποινικός Κώδικας & Κώδικας Ποινικής Δικονομίας</div>
+            </div>
+            
+            <div class="header-controls right">
+                <button class="header-btn" onclick="event.stopPropagation(); toggleFullscreen()" title="Πλήρης οθόνη" id="fullscreenBtn">
+                    ⛶
+                </button>
+                <button class="header-btn" onclick="event.stopPropagation(); showDevInfo()" title="Πληροφορίες εφαρμογής">
+                    ℹ️
+                </button>
+            </div>
         </header>
 
         <div class="search-section">
             <div class="search-dual">
-                <div style="position: relative;">
-                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη)" id="searchInput">
-                    <button class="search-btn clickable" onclick="performSearch()">🔍</button>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Αναζήτηση άρθρου ή κειμένου (π.χ. 299, απάτη, 280A)" id="searchInput">
+                    <button class="search-btn" onclick="performSearch()">🔍</button>
                 </div>
-                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος" id="paragraphInput">
+                <input type="text" class="search-input paragraph-search" placeholder="Παράγραφος/Εδάφιο" id="paragraphInput" disabled>
             </div>
-            
             <div class="search-mode">
-                <button class="mode-btn active clickable" data-mode="quick" onclick="setSearchMode('quick', this)">⚡ Γρήγορη αναζήτηση</button>
-                <button class="mode-btn clickable" data-mode="extended" onclick="setSearchMode('extended', this)">🔍 Εκτεταμένη αναζήτηση</button>
+                <button class="mode-btn active quick" onclick="setSearchMode('quick')">⚡ Γρήγορη αναζήτηση</button>
+                <button class="mode-btn extended" onclick="setSearchMode('extended')">🔍 Εκτεταμένη αναζήτηση</button>
             </div>
-            
             <div class="browse-buttons">
-                <button class="code-btn pk-btn clickable" onclick="showBrowse('PK', this)">
+                <button class="code-btn" onclick="showBrowse('PK')" id="browseButtonPK">
                     <span class="icon">📕</span>
                     ΠΟΙΝΙΚΟΣ ΚΩΔΙΚΑΣ
                 </button>
-                <button class="code-btn kpd-btn clickable" onclick="showBrowse('KPD', this)">
+                <button class="code-btn" onclick="showBrowse('KPD')" id="browseButtonKPD">
                     <span class="icon">📘</span>
                     ΚΩΔΙΚΑΣ ΠΟΙΝΙΚΗΣ ΔΙΚΟΝΟΜΙΑΣ
                 </button>
@@ -472,58 +69,75 @@
         </div>
 
         <main class="main-content">
+            <!-- Home Section -->
             <div class="section active" id="homeSection">
                 <div class="home-sections">
                     <div class="home-section">
                         <h3>⭐ Συχνά Χρησιμοποιούμενα</h3>
-                        <div class="bookmark-item clickable" onclick="showArticle('299', 'PK')">
+                        <div class="bookmark-item" onclick="showArticle('299', 'PK')">
                             <div>
                                 <div class="article-title">Άρθρο 299 - Απάτη</div>
                             </div>
-                            <div class="article-code pk">ΠΚ</div>
+                            <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item clickable" onclick="showArticle('187A', 'PK')">
+                        <div class="bookmark-item" onclick="showArticle('187A', 'PK')">
                             <div>
                                 <div class="article-title">Άρθρο 187Α - Βιασμός</div>
                             </div>
-                            <div class="article-code pk">ΠΚ</div>
+                            <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="bookmark-item clickable" onclick="showArticle('322', 'KPD')">
+                        <div class="bookmark-item" onclick="showArticle('322', 'KPD')">
                             <div>
                                 <div class="article-title">Άρθρο 322 - Προσωρινή κράτηση</div>
                             </div>
-                            <div class="article-code kpd">ΚΠΔ</div>
+                            <div class="article-code">ΚΠΔ</div>
                         </div>
                     </div>
 
                     <div class="home-section">
                         <h3>🕒 Πρόσφατα</h3>
-                        <div class="recent-item clickable" onclick="showArticle('280A', 'PK')">
+                        <div class="recent-item" onclick="showArticle('280A', 'PK')">
                             <div>
                                 <div class="article-title">Άρθρο 280Α - Υπεξαίρεση</div>
                             </div>
-                            <div class="article-code pk">ΠΚ</div>
+                            <div class="article-code">ΠΚ</div>
                         </div>
-                        <div class="recent-item clickable" onclick="showArticle('324', 'KPD')">
+                        <div class="recent-item" onclick="showArticle('324', 'KPD')">
                             <div>
                                 <div class="article-title">Άρθρο 324 - Διάρκεια κράτησης</div>
                             </div>
-                            <div class="article-code kpd">ΚΠΔ</div>
+                            <div class="article-code">ΚΠΔ</div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Search Results Section -->
+            <div class="section" id="searchSection">
+                <div class="search-results" id="searchResults">
+                    <!-- Results will be populated here -->
+                </div>
+            </div>
+
+            <!-- Article View Section -->
             <div class="section" id="articleSection">
-                <div id="articleContent">
-                    <!-- Article content will be loaded here -->
+                <div class="article-view" id="articleView">
+                    <!-- Article content will be populated here -->
+                </div>
+            </div>
+
+            <!-- Browse Section -->
+            <div class="section" id="browseSection">
+                <div class="browse-view" id="browseView">
+                    <!-- Browse content will be populated here -->
                 </div>
             </div>
         </main>
 
         <footer class="footer">
             <div class="footer-info">
-                📅 Ενημερωμένη μέχρι: 15/03/2025 | 🏛️ Τελευταίος Ν.: 5089/2024
+                📅 Ενημερωμένη μέχρι: 15/03/2025 | 🏛️ Τελευταίος Ν.: 5089/2024<br>
+                <small style="opacity: 0.7;">Τελευταία ενημέρωση: 11.07.2025</small>
             </div>
             <div class="footer-copyright">
                 © Dimitris Pavlidis
@@ -532,396 +146,82 @@
     </div>
 
     <!-- Developer Info Modal -->
-    <div class="modal-overlay" id="devModal">
+    <div id="devModal" class="modal">
         <div class="modal-content">
-            <button class="modal-close" onclick="closeDevInfo()">×</button>
             <div class="modal-header">
-                <h2>⚖️ Codex Criminalis</h2>
-                <h3>Πληροφορίες Ανάπτυξης</h3>
+                <h2>📋 Πληροφορίες Εφαρμογής</h2>
+                <button class="close-btn" onclick="closeDevInfo()">&times;</button>
             </div>
-            
-            <div class="dev-info">
-                <strong>👨‍💻 Developer:</strong> Dimitris Pavlidis<br>
-                <strong>📧 Email:</strong> dimipav@gmail.com<br>
-                <strong>🗓️ Version:</strong> 1.4.0 (Simplified)<br>
-                <strong>📅 Last Update:</strong> 11/01/2025<br>
-                <strong>🏛️ Legal Version:</strong> Ν.5089/2024<br><br>
-                
-                <strong>🔧 Technical Stack:</strong><br>
-                • Progressive Web App (PWA)<br>
-                • Offline-first architecture<br>
-                • Mobile-optimized design<br>
-                • Simplified JavaScript<br><br>
-                
-                <strong>📊 Data Coverage:</strong><br>
-                • Sample άρθρα για testing<br>
-                • Version comparison ready<br>
-                • Expandable architecture<br>
+            <div class="modal-body">
+                <h3>🎯 Βασικά Στοιχεία</h3>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <strong>📱 Εφαρμογή:</strong>
+                        Codex Criminalis v1.4.0
+                    </div>
+                    <div class="tech-item">
+                        <strong>🏗️ Αρχιτεκτονική:</strong>
+                        Progressive Web App (PWA)
+                    </div>
+                    <div class="tech-item">
+                        <strong>💾 Λειτουργία:</strong>
+                        Offline-first, Mobile-optimized
+                    </div>
+                    <div class="tech-item">
+                        <strong>🎨 Design:</strong>
+                        Mobile-first responsive UI
+                    </div>
+                </div>
+
+                <h3>⚡ Τεχνικά Χαρακτηριστικά</h3>
+                <ul>
+                    <li><strong>🔍 Έξυπνη αναζήτηση:</strong> Αναγνώριση άρθρων & κειμένου με highlighting</li>
+                    <li><strong>🧭 Navigation:</strong> Previous/Next με smart sorting</li>
+                    <li><strong>🔖 Bookmarks:</strong> Ενοποιημένο σύστημα σελιδοδεικτών</li>
+                    <li><strong>🟣 Version comparison:</strong> Συγκριτικές προβολές εκδόσεων</li>
+                    <li><strong>📤 Export:</strong> Copy, Share, Print, PDF capabilities</li>
+                </ul>
+
+                <h3>📊 Δεδομένα Δοκιμής</h3>
+                <ul>
+                    <li><strong>📕 ΠΚ άρθρα:</strong> 280, 280Α, 299, 187Α (4 άρθρα)</li>
+                    <li><strong>📘 ΚΠΔ άρθρα:</strong> 320, 322, 324, 325 (4 άρθρα)</li>
+                    <li><strong>🔄 Versions:</strong> 2024 & 2020 εκδόσεις για testing</li>
+                    <li><strong>⭐ Ready for:</strong> 500+ ΠΚ + 600+ ΚΠΔ άρθρα</li>
+                </ul>
+
+                <h3>🎨 UI/UX Features</h3>
+                <ul>
+                    <li><strong>🎵 Subtle sounds:</strong> Keyboard-style click feedback</li>
+                    <li><strong>🌈 Color coding:</strong> 5 διακριτά χρώματα per λειτουργία</li>
+                    <li><strong>⛶ Fullscreen:</strong> Immersive reading experience</li>
+                    <li><strong>📱 Touch-optimized:</strong> Mobile-first interaction design</li>
+                </ul>
+
+                <div style="text-align: center; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+                    <strong>🚀 Status:</strong> Ready για production data integration<br>
+                    <strong>📅 Build:</strong> July 11, 2025 | <strong>🔧 Version:</strong> 1.4.0 Complete
+                </div>
             </div>
-            
-            <button class="mode-btn clickable" onclick="closeDevInfo()">Κλείσιμο</button>
         </div>
     </div>
 
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+    
+    <!-- PWA Service Worker Registration -->
     <script>
-        // ===== GLOBAL STATE =====
-        let soundEnabled = true;
-        let currentSection = 'home';
-        
-        // Sample data
-        const sampleData = {
-            "PK": {
-                "299": {
-                    "title": "Απάτη",
-                    "text": "Όποιος με σκοπό να αποκομίσει για τον εαυτό του ή για άλλον παράνομο περιουσιακό όφελος, βλάπτει ξένη περιουσία προκαλώντας ή διατηρώντας σε κάποιον πλάνη με τεχνάσματα ή με παρασιώπηση της αλήθειας, τιμωρείται με φυλάκιση μέχρι δέκα έτη."
-                },
-                "280": {
-                    "title": "Κλοπή", 
-                    "text": "Όποιος αφαιρεί ξένο κινητό πράγμα με σκοπό να το ιδιοποιηθεί παράνομα, τιμωρείται με φυλάκιση μέχρι πέντε έτη ή με χρηματική ποινή."
-                },
-                "280A": {
-                    "title": "Υπεξαίρεση",
-                    "text": "Όποιος ως όργανο ή εκπρόσωπος νομικού προσώπου ή ως υπάλληλος ή εντολοδόχος φυσικού ή νομικού προσώπου ή ως διαχειριστής ξένης περιουσίας, παράνομα ιδιοποιείται χρήματα ή άλλα κινητά πράγματα που του έχουν εμπιστευθεί ή που έχει υπό την κατοχή του λόγω της ιδιότητάς του, τιμωρείται με φυλάκιση τουλάχιστον έξι μηνών."
-                },
-                "187A": {
-                    "title": "Βιασμός",
-                    "text": "Όποιος με σωματική βία ή με απειλή σοβαρού και άμεσου κινδύνου αναγκάζει κάποιον σε συνουσία ή σε άλλη ιδιαίτερα ταπεινωτική ή εξευτελιστική σεξουαλική πράξη, τιμωρείται με φυλάκιση από πέντε μέχρι είκοσι έτη."
-                }
-            },
-            "KPD": {
-                "322": {
-                    "title": "Προσωρινή κράτηση",
-                    "text": "Με βούλευμα ή διάταγμα του δικαστικού συμβουλίου ή του δικαστή ανακρίσεως, μπορεί να διαταχθεί η προσωρινή κράτηση του κατηγορούμενου εάν συντρέχουν οι προϋποθέσεις των άρθρων 282 και 307 και εάν είναι αναγκαία για να εξασφαλισθεί η παρουσία του κατηγορούμενου στη δίκη."
-                },
-                "324": {
-                    "title": "Διάρκεια κράτησης", 
-                    "text": "Η προσωρινή κράτηση του κατηγορούμενου για πλημμέλημα δεν μπορεί να υπερβεί τους έξι μήνες. Για κακούργημα δεν μπορεί να υπερβεί τους δεκαοκτώ μήνες μέχρι τη συζήτηση της υπόθεσης στο πρωτοβάθμιο δικαστήριο."
-                },
-                "320": {
-                    "title": "Ένταλμα σύλληψης",
-                    "text": "Ένταλμα σύλληψης εκδίδεται από τον εισαγγελέα ή τον δικαστή ανακρίσεως όταν υπάρχουν σοβαρές ενδείξεις ότι ο κατηγορούμενος έχει διαπράξει αξιόποινη πράξη."
-                },
-                "325": {
-                    "title": "Άρση προσωρινής κράτησης",
-                    "text": "Η προσωρινή κράτηση αίρεται αυτοδικαίως όταν παρέλθει ο χρόνος που προβλέπεται στο άρθρο 324 ή όταν εκδοθεί σχετική απόφαση του αρμόδιου δικαστηρίου."
-                }
-            }
-        };
-
-        // ===== UTILITY FUNCTIONS =====
-        function updateDebug(message) {
-            const debug = document.getElementById('debugInfo');
-            if (debug) {
-                debug.textContent = message;
-            }
-            console.log('DEBUG:', message);
-        }
-
-        function showToast(message) {
-            const toast = document.createElement('div');
-            toast.className = 'toast';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                if (document.body.contains(toast)) {
-                    document.body.removeChild(toast);
-                }
-            }, 3000);
-        }
-
-        function playClickSound() {
-            if (!soundEnabled) return;
-            
-            try {
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1);
-                
-                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
-                
-                oscillator.start();
-                oscillator.stop(audioContext.currentTime + 0.1);
-            } catch (e) {
-                console.log('Audio not supported:', e);
-            }
-        }
-
-        function showSection(sectionName) {
-            // Hide all sections
-            document.querySelectorAll('.section').forEach(section => {
-                section.classList.remove('active');
-            });
-            
-            // Show target section
-            const targetSection = document.getElementById(sectionName + 'Section');
-            if (targetSection) {
-                targetSection.classList.add('active');
-                currentSection = sectionName;
-            }
-        }
-
-        // ===== MAIN FUNCTIONS =====
-        function goHome() {
-            updateDebug('goHome() called');
-            playClickSound();
-            showSection('home');
-            
-            // Clear active browse buttons
-            document.querySelectorAll('.code-btn').forEach(btn => {
-                btn.classList.remove('active');
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('PWA: Service Worker registered successfully');
+                    })
+                    .catch(error => {
+                        console.log('PWA: Service Worker registration failed:', error);
+                    });
             });
         }
-
-        function toggleSound(event) {
-            if (event) event.stopPropagation();
-            updateDebug('toggleSound() called');
-            
-            soundEnabled = !soundEnabled;
-            const soundBtn = document.querySelector('.sound-toggle');
-            
-            if (soundEnabled) {
-                soundBtn.textContent = '🔊';
-                soundBtn.classList.remove('muted');
-                soundBtn.title = 'Απενεργοποίηση ήχων';
-                showToast('Ήχοι ενεργοποιημένοι');
-            } else {
-                soundBtn.textContent = '🔇';
-                soundBtn.classList.add('muted');
-                soundBtn.title = 'Ενεργοποίηση ήχων';
-                showToast('Ήχοι απενεργοποιημένοι');
-            }
-            
-            playClickSound();
-        }
-
-        function toggleFullscreen(event) {
-            if (event) event.stopPropagation();
-            updateDebug('toggleFullscreen() called');
-            playClickSound();
-            
-            showToast('Fullscreen λειτουργία σε ανάπτυξη');
-        }
-
-        function showDevInfo(event) {
-            if (event) event.stopPropagation();
-            updateDebug('showDevInfo() called');
-            playClickSound();
-            
-            const modal = document.getElementById('devModal');
-            if (modal) {
-                modal.style.display = 'flex';
-            }
-        }
-
-        function closeDevInfo() {
-            updateDebug('closeDevInfo() called');
-            playClickSound();
-            
-            const modal = document.getElementById('devModal');
-            if (modal) {
-                modal.style.display = 'none';
-            }
-        }
-
-        function setSearchMode(mode, buttonElement) {
-            updateDebug('setSearchMode() called: ' + mode);
-            playClickSound();
-            
-            // Clear all active
-            document.querySelectorAll('.mode-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Set active
-            buttonElement.classList.add('active');
-        }
-
-        function showBrowse(codeType, buttonElement) {
-            updateDebug('showBrowse() called: ' + codeType);
-            playClickSound();
-            
-            // Clear all active browse buttons
-            document.querySelectorAll('.code-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            // Set this button active
-            buttonElement.classList.add('active');
-            
-            showToast(`Περιήγηση ${codeType === 'PK' ? 'Ποινικού Κώδικα' : 'ΚΠΔ'} σε ανάπτυξη`);
-        }
-
-        function performSearch() {
-            updateDebug('performSearch() called');
-            playClickSound();
-            
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) {
-                showToast('Εισάγετε όρο αναζήτησης');
-                return;
-            }
-            
-            showToast(`Αναζήτηση για: "${query}" σε ανάπτυξη`);
-        }
-
-        function showArticle(articleNum, codeType) {
-            updateDebug(`showArticle() called: ${articleNum} ${codeType}`);
-            playClickSound();
-            
-            const article = sampleData[codeType] && sampleData[codeType][articleNum];
-            if (!article) {
-                showToast('Το άρθρο δεν βρέθηκε');
-                return;
-            }
-            
-            const codeName = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
-            const codeIcon = codeType === 'PK' ? '📕' : '📘';
-            
-            const articleContent = document.getElementById('articleContent');
-            if (articleContent) {
-                articleContent.innerHTML = `
-                    <div style="background: white; border-radius: 12px; padding: 20px; border: 1px solid #dee2e6;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
-                            <button class="mode-btn clickable" onclick="goHome()">← Αρχική</button>
-                            <div style="font-weight: 600; color: #2c3e50;">ΑΡΘΡΟ ${articleNum} ${codeName}</div>
-                            <div style="opacity: 0.5;">📄</div>
-                        </div>
-                        
-                        <div style="border-bottom: 2px solid #3498db; padding-bottom: 15px; margin-bottom: 20px;">
-                            <h2 style="color: #2c3e50; font-size: 20px; margin-bottom: 5px;">Άρθρο ${articleNum} - ${article.title}</h2>
-                            <div style="color: #7f8c8d; font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px;">
-                                <span style="font-size: 18px;">${codeIcon}</span>
-                                ${codeName} | Ενημερωμένη έκδοση
-                            </div>
-                        </div>
-                        
-                        <div style="line-height: 1.6; font-size: 16px; color: #2c3e50; margin-bottom: 20px;">
-                            <p>${article.text}</p>
-                        </div>
-                        
-                        <div style="display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #dee2e6; flex-wrap: wrap;">
-                            <button class="mode-btn clickable" onclick="copyArticle('${articleNum}', '${codeType}')">📋 Αντιγραφή</button>
-                            <button class="mode-btn clickable" onclick="showToast('Share λειτουργία σε ανάπτυξη')">📤 Κοινοποίηση</button>
-                            <button class="mode-btn clickable" onclick="showToast('Print λειτουργία σε ανάπτυξη')">🖨️ Εκτύπωση</button>
-                        </div>
-                    </div>
-                `;
-                
-                showSection('article');
-            }
-        }
-
-        function copyArticle(articleNum, codeType) {
-            updateDebug(`copyArticle() called: ${articleNum} ${codeType}`);
-            playClickSound();
-            
-            const article = sampleData[codeType] && sampleData[codeType][articleNum];
-            if (!article) {
-                showToast('Άρθρο δεν βρέθηκε');
-                return;
-            }
-            
-            const codeName = codeType === 'PK' ? 'ΠΚ' : 'ΚΠΔ';
-            const text = `Άρθρο ${articleNum} ${codeName} - ${article.title}\n\n${article.text}`;
-            
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('Το άρθρο αντιγράφηκε στο πρόχειρο');
-                }).catch(() => {
-                    showToast('Αποτυχία αντιγραφής');
-                });
-            } else {
-                // Fallback for older browsers
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    showToast('Το άρθρο αντιγράφηκε στο πρόχειρο');
-                } catch {
-                    showToast('Αποτυχία αντιγραφής');
-                }
-                document.body.removeChild(textArea);
-            }
-        }
-
-        // ===== EVENT LISTENERS =====
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDebug('DOM Content Loaded - Initializing...');
-            
-            // Test all functions
-            const functions = ['goHome', 'toggleSound', 'toggleFullscreen', 'showDevInfo', 'closeDevInfo', 'showBrowse', 'performSearch', 'showArticle'];
-            const missing = functions.filter(fn => typeof window[fn] !== 'function');
-            
-            if (missing.length === 0) {
-                updateDebug('✅ All functions loaded successfully');
-                showToast('Codex Criminalis φορτώθηκε επιτυχώς!');
-            } else {
-                updateDebug('❌ Missing functions: ' + missing.join(', '));
-            }
-            
-            // Add Enter key support for search
-            const searchInput = document.getElementById('searchInput');
-            if (searchInput) {
-                searchInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        performSearch();
-                    }
-                });
-            }
-            
-            // Add click outside modal to close
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('modal-overlay')) {
-                    closeDevInfo();
-                }
-            });
-            
-            // Add ESC key support
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') {
-                    closeDevInfo();
-                }
-            });
-            
-            // Hide debug info after 5 seconds
-            setTimeout(() => {
-                const debug = document.getElementById('debugInfo');
-                if (debug) {
-                    debug.style.display = 'none';
-                }
-            }, 5000);
-        });
-
-        // Make functions globally available
-        window.goHome = goHome;
-        window.toggleSound = toggleSound;
-        window.toggleFullscreen = toggleFullscreen;
-        window.showDevInfo = showDevInfo;
-        window.closeDevInfo = closeDevInfo;
-        window.setSearchMode = setSearchMode;
-        window.showBrowse = showBrowse;
-        window.performSearch = performSearch;
-        window.showArticle = showArticle;
-        window.copyArticle = copyArticle;
-
-        // Global error handler
-        window.addEventListener('error', function(e) {
-            updateDebug('❌ JavaScript Error: ' + e.message);
-            console.error('Error:', e);
-        });
-
-        // Initial status
-        updateDebug('JavaScript loaded - Ready!');
     </script>
 </body>
 </html>
