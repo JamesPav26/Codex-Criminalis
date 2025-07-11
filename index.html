@@ -983,6 +983,10 @@
             justify-content: center;
         }
 
+        .modal-overlay.show {
+            display: flex;
+        }
+
         .modal-content {
             background: white;
             border-radius: 12px;
@@ -991,6 +995,7 @@
             margin: 20px;
             text-align: center;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .modal-header {
@@ -1007,6 +1012,11 @@
             font-size: 24px;
             cursor: pointer;
             color: #7f8c8d;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #2c3e50;
         }
 
         .dev-info {
@@ -1026,12 +1036,12 @@
 </head>
 <body>
     <div class="container">
-        <header class="header" onclick="app.goHome()">
-            <button class="sound-toggle" onclick="app.toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
+        <header class="header" onclick="app && app.goHome()">
+            <button class="sound-toggle" onclick="app && app.toggleSound(event)" title="Ενεργοποίηση/Απενεργοποίηση ήχων">🔊</button>
             
             <div class="header-controls">
-                <button class="header-btn click-sound" onclick="app.toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
-                <button class="header-btn click-sound" onclick="app.showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
+                <button class="header-btn click-sound" onclick="app && app.toggleFullscreen(event)" title="Πλήρης οθόνη">⛶</button>
+                <button class="header-btn click-sound" onclick="app && app.showDevInfo(event)" title="Πληροφορίες">ℹ️</button>
             </div>
             
             <h1>⚖️ Codex Criminalis</h1>
